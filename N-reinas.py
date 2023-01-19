@@ -22,13 +22,14 @@ estado_inicial = []
 estado_actual = []
 cerrados=[]
 iteracion = 0
+soluciones = []
 
 
 # Declaración de funciones
 ##################################################
 
 def Reset():
-    global cerrados, celdas, reinas, estado_actual,estado_inicial, iteracion, speed #,tablero
+    global cerrados, celdas, reinas, estado_actual,estado_inicial, iteracion, speed, soluciones #,tablero
 
     celdas = 0
     reinas = 0
@@ -37,11 +38,15 @@ def Reset():
     iteracion = 0
     speed = 0
     cerrados=[]
+    soluciones = []
+
+def Limpia_pantalla():
+    os.system(limpia_pantalla)
 
 def Peticion_variables():
     global celdas, reinas, estado_inicial, estado_actual, speed
 
-    os.system(limpia_pantalla)
+    Limpia_pantalla()
     print('\n====================')
     print('  N reinas   ',version)
     print('====================\n')
@@ -49,10 +54,10 @@ def Peticion_variables():
     print('Bienvenidos al juego de las N reinas \n')
 
     while celdas == 0 or not celdas.isnumeric():
-        celdas = input('Introduce el tamaño del tablero, NxN celdas : (Recomendado no más de 4): ')
+        celdas = input('Tamaño del tablero, NxN celdas : (Recomendado no más de 5): ')
     celdas = int(celdas)
     while reinas == 0 or not reinas.isnumeric():
-        reinas = input('Introduce el número de reinas (Recomendado no más de 4): ')
+        reinas = input('Introduce el nº de reinas (Recomendado no más de 5): ')
     reinas = int(reinas)
 
     while speed == 0 or not speed.isnumeric():
@@ -74,14 +79,12 @@ def Peticion_variables():
         time.sleep(1)
 
 def Imprime_estado(state):
-    os.system(limpia_pantalla)
     print('\n====================')
     print('  N reinas   ',version)
     print('====================\n')
     print('Celdas : ',celdas,' x ',celdas)
     print('Reinas: ',reinas)
     print('\n====================\n')
-
     for x in range(len(state)):
         for y in range(len(state[x])):
             print(state[x][y],end=' ')
@@ -89,9 +92,10 @@ def Imprime_estado(state):
     print()
     print('Iteraciones : ',iteracion)
     print()
-    if Cuenta_reinas(state) > 0:
-        print('Reinas colocadas', Cuenta_reinas(state)-1)
-    print()
+    print('Soluciones encontradas : ')
+    if soluciones:
+         for x in range(len(soluciones)):
+            print(x+1,' : ',soluciones[x])
     time.sleep(1/speed)
 
 
@@ -147,9 +151,6 @@ def Cuenta_reinas(state):
             count += state[x][y]
     return count
 
-
-########### COMPROBAR ###########################
-
 def Estados(s):
     for x in range(len(s)):
         for y in range(len(s)):
@@ -165,6 +166,7 @@ def Profundidad(actual, path=[]):
     else: 
         for ns in Estados(actual):
             iteracion += 1
+            Limpia_pantalla()
             Imprime_estado(ns)
             if Comprueba_estado(ns) and ns not in cerrados:
                 cerrados.append(ns)
@@ -179,17 +181,13 @@ def Ejecucion_total():
     try:
         Reset()
         Peticion_variables()
-        solucion = Profundidad(estado_inicial)
-        # Imprime_estado(estado_inicial)
-        # for paso in solucion:
-        #     estado_actual = paso
-        #     Imprime_estado(estado_actual)
-        print(solucion[-1])
-        print('Conseguido!!\n')
-    except RecursionError:
-        print('Disculpe las molestias pero con los parámetros introducimos, se excede la capacidad de cómputo del intérprete.\nPor favor, vuelva a introducir nuevos parámetros con valores más bajos de Discos y/o Torres.')
-        input('Pulse cualquier tecla para continuar...')
-        Ejecucion_total()
+        while True:
+            solucion = Profundidad(estado_inicial)
+            soluciones.append(solucion[-1])
+            solucion = []
+            print('Conseguido!!\n')
+    except IndexError:
+        print('Ha llegado al final.\n\nEl programa ha encontrado ',len(soluciones),'soluciones\n\nGracias por usar N-Reinas!!\n')
 
 # MAIN CODE
 ##################################################
