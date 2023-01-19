@@ -13,12 +13,11 @@ import os, sys, copy, time
 # Declaración de variables
 ##################################################
 
-version = 'v0.2'
+version = 'v0.3'
 
 limpia_pantalla = 'clear' if os.name == 'posix' else 'CLS'
 celdas = 0
 reinas = 0
-#tablero = []
 estado_inicial = []
 estado_actual = []
 cerrados=[]
@@ -29,7 +28,7 @@ iteracion = 0
 ##################################################
 
 def Reset():
-    global celdas, reinas, estado_actual,estado_inicial, iteracion, speed #,tablero
+    global cerrados, celdas, reinas, estado_actual,estado_inicial, iteracion, speed #,tablero
 
     celdas = 0
     reinas = 0
@@ -90,7 +89,8 @@ def Imprime_estado(state):
     print()
     print('Iteraciones : ',iteracion)
     print()
-    print('Reinas colocadas', Cuenta_reinas(state))
+    if Cuenta_reinas(state) > 0:
+        print('Reinas colocadas', Cuenta_reinas(state)-1)
     print()
     time.sleep(1/speed)
 
@@ -135,16 +135,10 @@ def comprueba_diagonales_izq(state):
     else:                                        return False
 
 def Comprueba_estado(state):
-    #assert type(state)== list and len(state)==celdas
     if comprueba_filas(state) and comprueba_columnas(state) and comprueba_diagonales_der(state) and comprueba_diagonales_izq(state):
         return True
     else:
         return False
-
-
-# def Diagonal(lista, desplazamiento=0):
-#     start = 0 if desplazamiento >=0 else 0 - desplazamiento
-#     return [lista[x][x+desplazamiento] for x in range(start,len(lista)-(abs(desplazamiento)-start))]
 
 def Cuenta_reinas(state):
     count = 0
@@ -164,7 +158,6 @@ def Estados(s):
                 ns[x][y] = 1
                 yield ns
 
-
 def Profundidad(actual, path=[]):
     global iteracion
     if Cuenta_reinas(actual) == reinas:
@@ -172,8 +165,6 @@ def Profundidad(actual, path=[]):
     else: 
         for ns in Estados(actual):
             iteracion += 1
-            # print('Iteración nº : ',iteracion,end='\r')
-            # time.sleep(0.2)
             Imprime_estado(ns)
             if Comprueba_estado(ns) and ns not in cerrados:
                 cerrados.append(ns)
@@ -188,11 +179,12 @@ def Ejecucion_total():
     try:
         Reset()
         Peticion_variables()
-        Profundidad(estado_inicial)
+        solucion = Profundidad(estado_inicial)
         # Imprime_estado(estado_inicial)
         # for paso in solucion:
         #     estado_actual = paso
         #     Imprime_estado(estado_actual)
+        print(solucion[-1])
         print('Conseguido!!\n')
     except RecursionError:
         print('Disculpe las molestias pero con los parámetros introducimos, se excede la capacidad de cómputo del intérprete.\nPor favor, vuelva a introducir nuevos parámetros con valores más bajos de Discos y/o Torres.')
