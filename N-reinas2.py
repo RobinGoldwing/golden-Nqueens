@@ -8,7 +8,7 @@
 # Declaración de librerias
 ##################################################
 
-import os, sys, copy, time
+import os, sys, copy, time, random
 
 # Declaración de variables
 ##################################################
@@ -90,8 +90,6 @@ def Imprime_estado(state):
     print()
     print('Iteraciones : ',iteracion)
     print()
-    print('Reinas colocadas', Cuenta_reinas(state))
-    print()
     time.sleep(1/speed)
 
 
@@ -157,12 +155,13 @@ def Cuenta_reinas(state):
 ########### COMPROBAR ###########################
 
 def Estados(s):
-    for x in range(len(s)):
-        for y in range(len(s)):
-            ns=copy.deepcopy(s)
-            if ns[x][y] == 0:
-                ns[x][y] = 1
-                yield ns
+    while Cuenta_reinas(s) != reinas:
+        ns=copy.deepcopy(s)
+        x = random.randint(0,len(estado_actual)-1)
+        y = random.randint(0,len(estado_actual)-1)
+        if ns[x][y] == 0:
+            ns[x][y] = 1
+            yield ns
 
 
 def Profundidad(actual, path=[]):
@@ -188,12 +187,12 @@ def Ejecucion_total():
     try:
         Reset()
         Peticion_variables()
-        Profundidad(estado_inicial)
-        # Imprime_estado(estado_inicial)
+        solucion = Profundidad(estado_inicial)
+        #Imprime_estado(estado_inicial)
         # for paso in solucion:
         #     estado_actual = paso
         #     Imprime_estado(estado_actual)
-        print('Conseguido!!\n')
+        print('\nConseguido!!\n')
     except RecursionError:
         print('Disculpe las molestias pero con los parámetros introducimos, se excede la capacidad de cómputo del intérprete.\nPor favor, vuelva a introducir nuevos parámetros con valores más bajos de Discos y/o Torres.')
         input('Pulse cualquier tecla para continuar...')
